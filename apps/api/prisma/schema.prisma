@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MonitorStatus {
+  UP
+  DOWN
+  UNKNOWN
+}
+
+enum FailureReason {
+  INVALID_URL
+  TIMEOUT
+  DNS
+  HTTP_ERROR
+  UNKNOWN_ERROR
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String
+  role         Role           @default(USER)
+  urls         MonitoredUrl[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model MonitoredUrl {
+  id                 String            @id @default(cuid())
+  name               String
+  address            String
+  scheduleEnabled    Boolean           @default(false)
+  intervalMinutes    Int               @default(5)
+  nextCheckAt        DateTime?
+  lastStatus         MonitorStatus     @default(UNKNOWN)
+  lastResponseTimeMs Int?
+  lastCheckedAt      DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checks             CheckResult[]
+  reports            AggregatedReport[]
+
+  @@unique([userId, address])
+  @@index([userId, scheduleEnabled, nextCheckAt])
+}
+
+model CheckResult {
+  id             String         @id @default(cuid())
+  monitoredUrlId String
+  monitoredUrl   MonitoredUrl   @relation(fields: [monitoredUrlId], references: [id], onDelete: Cascade)
+  status         MonitorStatus
+  httpStatus     Int?
+  responseTimeMs Int?
+  checkedAt      DateTime       @default(now())
+  errorMessage   String?
+  failureReason  FailureReason?
+  correlationId  String
+
+  @@index([monitoredUrlId, checkedAt(sort: Desc)])
+}
+
+model AggregatedReport {
+  id                String       @id @default(cuid())
+  monitoredUrlId     String
+  monitoredUrl       MonitoredUrl @relation(fields: [monitoredUrlId], references: [id], onDelete: Cascade)
+  reportDate         DateTime
+  totalChecks        Int          @default(0)
+  successfulChecks   Int          @default(0)
+  failureCount       Int          @default(0)
+  responseSamples    Int          @default(0)
+  avgResponseTimeMs  Float        @default(0)
+  uptimePercentage   Float        @default(0)
+
+  @@unique([monitoredUrlId, reportDate])
+  @@index([reportDate])
+}

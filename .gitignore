@@ -1,0 +1,24 @@
+node_modules/
+dist/
+coverage/
+.env
+*.log
+
+# SQLite databases (both possible locations)
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+apps/api/prisma/prisma/dev.db
+apps/api/prisma/prisma/dev.db-journal
+*.db
+*.db-journal
+
+# Prisma generated output
+apps/api/generated/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Vite compiled output (not needed in source control)
+apps/web/vite.config.js
+apps/web/vite.config.d.ts
+

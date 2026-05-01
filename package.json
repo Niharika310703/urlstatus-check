@@ -1,0 +1,20 @@
+{
+  "name": "url-health-observability-platform",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,yellow \"npm run dev --workspace api\" \"npm run dev --workspace web\"",
+    "dev:api": "npm run dev --workspace api",
+    "dev:web": "npm run dev --workspace web",
+    "build": "npm run build --workspaces --if-present",
+    "db:generate": "npm run prisma:generate --workspace api",
+    "db:push": "npm run prisma:push --workspace api",
+    "db:seed": "npm run seed --workspace api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
