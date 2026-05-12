@@ -212,4 +212,4 @@ AI was used to speed up solution design, scaffolding, code implementation, itera
 - Add alerting channels such as email or Slack
 - Add tests for auth, scheduler behavior, and dashboard API responses
 
-# URL-Health-Observability-Platform-PulseBoard-
+# URL-Health-Observability-Platform-PulseBoard
